@@ -9,8 +9,6 @@
 
     public string AssetContainerName { get; set; }
 
-    public string MicrioContainerName { get; set; }
-
     /// <summary>
     /// If no Cdn is configured the imageUrl defaults to /image
     /// </summary>

@@ -14,24 +14,19 @@ namespace Q42.ImageResizert
       _storageSettings = storageSettings.Value;
     }
 
-    public string GetUrlForCoverImage(Guid id, int width, int height, string containerName = null)
+    public string GetUrlForCoverImage(Guid id, int width, int height)
     {
-      return GetUrlForImage(id.ToString().ToUpper(), width, height, true, containerName);
+      return GetUrlForImage(id.ToString().ToUpper(), width, height, true);
     }
 
-    public string GetUrlForCoverImage(string id, int width, int height, string containerName = null)
+    public string GetUrlForCoverImage(string id, int width, int height)
     {
-      return GetUrlForImage(id, width, height, true, containerName);
+      return GetUrlForImage(id, width, height, true);
     }
 
-    public string GetUrlForScaledImage(Guid id, int width = 0, int height = 0, string containerName = null)
+    public string GetUrlForScaledImage(Guid id, int width = 0, int height = 0)
     {
-      return GetUrlForImage(id.ToString().ToUpper(), width, height, false, containerName);
-    }
-
-    public string GetBaseUrlForMicrioImage(Guid id)
-    {
-      return GetBaseUrlForImage(id.ToString()) + "&containername=" + _storageSettings.MicrioContainerName;
+      return GetUrlForImage(id.ToString().ToUpper(), width, height, false);
     }
 
     public string GetBaseUrlForImage(Guid id)
@@ -39,6 +34,11 @@ namespace Q42.ImageResizert
       return GetBaseUrlForImage(id.ToString().ToUpper());
     }
 
+    /// <summary>
+    /// Distinguish between CDN or image resize url
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public string GetBaseUrlForImage(string id)
     {
       string url = "/image?id=" + id;
@@ -49,7 +49,7 @@ namespace Q42.ImageResizert
       return url;
     }
 
-    private string GetUrlForImage(string id, int width = 0, int height = 0, bool cover = false, string containerName = null)
+    private string GetUrlForImage(string id, int width = 0, int height = 0, bool cover = false)
     {
       string url = GetBaseUrlForImage(id);
 
@@ -60,10 +60,7 @@ namespace Q42.ImageResizert
         url += "&height=" + height;
 
       if (cover)
-        url += "&cover=" + cover;
-
-      if (!string.IsNullOrWhiteSpace(containerName))
-        url += "&containerName=" + containerName;
+        url += "&cover=" + cover;   
 
       return url;
     }

@@ -23,9 +23,9 @@ namespace Q42.ImageResizert
 
     [ResponseCache(Duration = 60 * 60 * 24 * 365, Location = ResponseCacheLocation.Any)]
     [HttpGet("image/{id}")]
-    public async Task<IActionResult> GetById(string id, int w = 0, int h = 0, bool cover = false, string containerName = null, int quality = 75)
+    public async Task<IActionResult> GetById(string id, int w = 0, int h = 0, bool cover = false, int quality = 75)
     {
-      return await Index(id, w, h, cover, containerName, quality);
+      return await Index(id, w, h, cover, quality);
     }
 
     /// <summary>
@@ -38,14 +38,14 @@ namespace Q42.ImageResizert
     /// <param name="containerName">override the configured container name</param>
     /// <returns></returns>
     [ResponseCache(Duration = 60 * 60 * 24 * 365, Location = ResponseCacheLocation.Any)]
-    public async Task<IActionResult> Index(string id, int width = 0, int height = 0, bool cover = false, string containerName = null, int quality = 75)
+    public async Task<IActionResult> Index(string id, int width = 0, int height = 0, bool cover = false, int quality = 75)
     {
       // connect to blobstore
       CloudStorageAccount storageAccount = CloudStorageAccount.Parse(_storageSettings.AzureConnectionString);
       CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
 
       // get image container
-      string downloadContainerName = String.IsNullOrEmpty(containerName) ? _storageSettings.AssetContainerName : containerName;
+      string downloadContainerName =  _storageSettings.AssetContainerName;
       CloudBlobContainer downloadContainer = blobClient.GetContainerReference(downloadContainerName);
 
       // get from cache if exists
