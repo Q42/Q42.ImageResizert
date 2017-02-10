@@ -1,5 +1,7 @@
 {
-  "version": "1.0.0-*",
+  "version": "0.9.0",
+  "description": "Q42.ImageResizert Class Library",
+  "authors": [ "Q42" ],
 
   "dependencies": {
     "Magick.NET.Core-Q8": "7.0.3.502",
