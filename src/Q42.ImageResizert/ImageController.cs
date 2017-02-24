@@ -34,8 +34,7 @@ namespace Q42.ImageResizert
     /// <param name="id"></param>
     /// <param name="width"></param>
     /// <param name="height"></param>
-    /// <param name="cover"></param>
-    /// <param name="containerName">override the configured container name</param>
+    /// <param name="cover"></param>    
     /// <returns></returns>
     [ResponseCache(Duration = 60 * 60 * 24 * 365, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> Index(string id, int width = 0, int height = 0, bool cover = false, int quality = 75)
