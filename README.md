@@ -2,7 +2,7 @@
 
 
 # Q42.ImageResizert
-Image resizing for dotnet core mvc projects using ImageMagick
+Image resizing for dotnet core mvc projects using ImageMagick and Azure storage.
 
 Include this package in any dot net core mvc file and `/image/{imageId}?width=200&height=300&cover=true` will handle imageresizing.
 
@@ -19,3 +19,18 @@ services.Configure<ImageResizerSettings>(Configuration.GetSection("ImageResizerS
     "CompressionQuality": "<1-100>"
   }
   ```
+
+### Caching
+By default, all images that are created and stored in `imagecache/{id}-{width}-{height}`. There is no mechanism for clearing these.
+
+### Razor view helper
+To use the UrlHelper shorthands
+```cs
+<img src="@ImageResizer.GetBaseUrlForImage(item.Image)" />
+```
+
+add this line to `_ViewImports.csthml`
+```cs
+@inject Q42.ImageResizer.ImageResizer ImageResizer
+```
+
