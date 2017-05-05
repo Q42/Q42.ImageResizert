@@ -4,29 +4,40 @@
 # Q42.ImageResizert
 Image resizing for dotnet core mvc projects using ImageMagick and Azure storage.
 
-Include this package in any dot net core mvc file and `/image/{imageId}?width=200&height=300&cover=true` will handle imageresizing.
+Include this package in any dot net core mvc file and `/image/{imageId}?w=200&h=300&cover=true&quality=90` will handle imageresizing.
+
+## Q42.ImageResizertService
+
+You can also use the ImageResizertService directly 
+```cs
+var service = new ImageResizertService(settings);
+```
 
 ### Configure
 ```cs
-services.Configure<ImageResizerSettings>(Configuration.GetSection("ImageResizerSettings"));
+services.Configure<ImageResizertSettings>(Configuration.GetSection("ImageResizerSettings"));
 ```
 
 ```json
 "ImageResizerSettings": {
     "AzureConnectionString": "DefaultEndpointsProtocol=https;AccountName=<yourname>;AccountKey=<yourkey>",
     "AssetContainerName": "<yourname>",    
-    "ImageCdn": "<http://optional:url>",
-    "CompressionQuality": "<1-100>"
+    "CompressionQuality": "<1-100>",
+    
+    // optional settings
+    "CacheContainerName":  "<mycachecontanier>",
+    "CacheFolderName": "<mycachefolder>", // defaults to imagecache
+    "ImageCdn": "<http://optional:url>"
   }
-  ```
+```
 
 ### Caching
-By default, all images that are created and stored in `imagecache/{id}-{width}-{height}`. There is no mechanism for clearing these.
+By default, all images that are created and stored in `<CacheFolderName>/{id}-{width}-{height}-{cover}-{quality}`. Currently you can only clear these by deleting the imagecache folder.
 
 ### Razor view helper
 To use the UrlHelper shorthands
 ```cs
-<img src="@ImageResizer.GetBaseUrlForImage(item.Image)" />
+<img src="@ImageResizer.GetBaseUrlForImage(item.ImageId)" />
 ```
 
 add this line to `_ViewImports.csthml`
