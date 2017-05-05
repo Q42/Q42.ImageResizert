@@ -73,6 +73,8 @@ namespace Q42.ImageResizert
 
                     // store in cache
                     await cacheBlob.UploadFromByteArrayAsync(bytes, 0, bytes.Length);
+                    cacheBlob.Properties.ContentType = "image/jpeg";
+                    await cacheBlob.SetPropertiesAsync();
 
                     return bytes;
                 }
