@@ -4,7 +4,7 @@
 # Q42.ImageResizert
 Image resizing for dotnet core mvc projects using ImageMagick and Azure storage.
 
-Include this package in any dot net core mvc file and `/image/{imageId}?width=200&height=300&cover=true` will handle imageresizing.
+Include this package in any dot net core mvc file and `/image/{imageId}?w=200&h=300&cover=true&quality=90` will handle imageresizing.
 
 ## Q42.ImagaResizertService
 
