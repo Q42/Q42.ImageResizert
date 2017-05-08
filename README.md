@@ -1,6 +1,5 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/nc3782ai2n0u7wtp?svg=true)](https://ci.appveyor.com/project/Q42/q42-imageresizert)
 
-
 # Q42.ImageResizert
 Image resizing for dotnet core mvc projects using ImageMagick and Azure storage.
 
@@ -27,7 +26,8 @@ services.Configure<ImageResizertSettings>(Configuration.GetSection("ImageResizer
     // optional settings
     "CacheContainerName":  "<mycachecontanier>",
     "CacheFolderName": "<mycachefolder>", // defaults to imagecache
-    "ImageCdn": "<http://optional:url>"
+    "BaseUrl": "<your application url>" // when configured, only absolute urls will be returned
+    "ImageCdn": "<your cdn url>" // when configured, only absolute urls will be returned. Overrides BaseUrl
   }
 ```
 
@@ -37,11 +37,11 @@ By default, all images that are created and stored in `<CacheFolderName>/{id}-{w
 ### Razor view helper
 To use the UrlHelper shorthands
 ```cs
-<img src="@ImageResizer.GetBaseUrlForImage(item.ImageId)" />
+<img src="@UrlHelper.GetBaseUrlForImage(item.ImageId)" />
 ```
 
 add this line to `_ViewImports.csthml`
 ```cs
-@inject Q42.ImageResizer.ImageResizer ImageResizer
+@inject Q42.ImageResizer.UrlHelper UrlHelper
 ```
 

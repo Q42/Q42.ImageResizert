@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Q42.ImageResizert", "Q42.ImageResizert\Q42.ImageResizert.csproj", "{530AFD3D-1D34-43AC-BD57-FD0447DDDF13}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Q42.ImageResizert.Test", "Q42.ImageResizert.Test\Q42.ImageResizert.Test.csproj", "{7EC70DF8-FBC0-4527-8377-D4A77FB7E36D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{530AFD3D-1D34-43AC-BD57-FD0447DDDF13}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{530AFD3D-1D34-43AC-BD57-FD0447DDDF13}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{530AFD3D-1D34-43AC-BD57-FD0447DDDF13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EC70DF8-FBC0-4527-8377-D4A77FB7E36D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EC70DF8-FBC0-4527-8377-D4A77FB7E36D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EC70DF8-FBC0-4527-8377-D4A77FB7E36D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EC70DF8-FBC0-4527-8377-D4A77FB7E36D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
