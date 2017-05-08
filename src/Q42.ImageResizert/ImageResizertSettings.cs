@@ -31,5 +31,11 @@
         /// If no Cdn is configured the imageUrl defaults to /image
         /// </summary>
         public string ImageCdn { get; set; }
+
+        /// <summary>
+        /// Base url of your application, including the scheme e.g: https://myhost.com
+        /// Used in absolute url paths
+        /// </summary>
+        public string BaseUrl { get; set; }
     }
 }
