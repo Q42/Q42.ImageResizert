@@ -21,6 +21,7 @@ namespace Q42.ImageResizert
             try
             {
                 var image = await imageService.GetImageAsync(id, w, h, cover, quality);
+
                 return File(image, "image/jpeg");
             }
             catch (ArgumentException error)
@@ -30,6 +31,10 @@ namespace Q42.ImageResizert
             catch (AssetNotFoundException error)
             {
                 return BadRequest(error.Message);
+            }
+            catch (Exception error)
+            {
+                throw error;
             }
         }
     }
