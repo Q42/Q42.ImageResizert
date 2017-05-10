@@ -27,21 +27,18 @@ namespace Q42.ImageResizert
             compressionQuality = settings.CompressionQuality;
         }
 
-        public async Task<byte[]> GetImageAsync(string id, int? width = null, int? height = null, bool cover = false, int? quality = null)
+        public async Task<Stream> GetImageAsync(string id, int? width = null, int? height = null, bool cover = false, int? quality = null)
         {
             return await GetImageAsync(id, width, height, cover, quality ?? compressionQuality);
         }
 
-        private async Task<byte[]> GetImageAsync(string id, int? width, int? height, bool cover, int quality)
+        private async Task<Stream> GetImageAsync(string id, int? width, int? height, bool cover, int quality)
         {
             // get from cache if exists
             var cacheBlob = cacheContainer.GetBlockBlobReference(GetCacheUrl(id, width, height, cover, quality));
             if (await cacheBlob.ExistsAsync())
             {
-                var stream = new MemoryStream();
-                await cacheBlob.DownloadToStreamAsync(stream);
-
-                return stream.ToArray();
+                return await cacheBlob.OpenReadAsync();
             }
 
             using (Stream stream = new MemoryStream())
@@ -50,6 +47,11 @@ namespace Q42.ImageResizert
                 var blob = downloadContainer.GetBlobReference(id);
                 if (!await blob.ExistsAsync())
                     throw new AssetNotFoundException();
+
+                if (blob.Properties.Length == 0)
+                {
+                    throw new AssetInvalidException();
+                }
 
                 // download image
                 await blob.DownloadToStreamAsync(stream);
@@ -76,7 +78,7 @@ namespace Q42.ImageResizert
                     cacheBlob.Properties.ContentType = "image/jpeg";
                     await cacheBlob.SetPropertiesAsync();
 
-                    return bytes;
+                    return await cacheBlob.OpenReadAsync();
                 }
             }
 
