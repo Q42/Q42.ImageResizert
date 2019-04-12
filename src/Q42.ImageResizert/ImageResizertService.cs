@@ -64,9 +64,6 @@ namespace Q42.ImageResizert
                 // Read from stream.
                 using (var image = Image.Load(Configuration.Default, stream, out var format))
                 {
-                    //image.Quality = quality;
-                    //image.Format = MagickFormat.Jpeg;
-
                     if (cover)
                     {
                         CropImage(image, width, height);
@@ -78,7 +75,7 @@ namespace Q42.ImageResizert
 
                     using (var output = new MemoryStream())
                     {
-                        if (format.DefaultMimeType.ToLowerInvariant() == "image/jpeg")
+                        if (format.DefaultMimeType == JpegFormat.Instance.DefaultMimeType)
                         {
                             image.SaveAsJpeg(output, new JpegEncoder
                             {
