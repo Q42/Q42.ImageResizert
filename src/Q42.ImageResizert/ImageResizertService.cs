@@ -1,11 +1,14 @@
 ﻿using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using ImageMagick;
 
 namespace Q42.ImageResizert
 {
@@ -56,11 +59,13 @@ namespace Q42.ImageResizert
                 // download image
                 await blob.DownloadToStreamAsync(stream);
 
+                
+
                 // Read from stream.
-                using (MagickImage image = new MagickImage(stream))
+                using (var image = Image.Load(Configuration.Default, stream, out var format))
                 {
-                    image.Quality = quality;
-                    image.Format = MagickFormat.Jpeg;
+                    //image.Quality = quality;
+                    //image.Format = MagickFormat.Jpeg;
 
                     if (cover)
                     {
@@ -71,21 +76,35 @@ namespace Q42.ImageResizert
                         ResizeImage(image, width, height);
                     }
 
-                    byte[] bytes = image.ToByteArray();
+                    using (var output = new MemoryStream())
+                    {
+                        if (format.DefaultMimeType.ToLowerInvariant() == "image/jpeg")
+                        {
+                            image.SaveAsJpeg(output, new JpegEncoder
+                            {
+                                Quality = quality,
+                                Subsample = JpegSubsample.Ratio444
+                            });
+                        }
+                        else
+                        {
+                            image.Save(output, format);
+                        }
 
-                    // store in cache
-                    await cacheBlob.UploadFromByteArrayAsync(bytes, 0, bytes.Length);
-                    cacheBlob.Properties.ContentType = "image/jpeg";
-                    await cacheBlob.SetPropertiesAsync();
+                        // store in cache
+                        await cacheBlob.UploadFromStreamAsync(output);
+                        cacheBlob.Properties.ContentType = format.DefaultMimeType;
+                        await cacheBlob.SetPropertiesAsync();
 
-                    return await cacheBlob.OpenReadAsync();
+                        return output;
+                    }
                 }
             }
 
             throw new Exception("You did it wrong. Find help. Or don't.");
         }
 
-        private void CropImage(MagickImage image, int? width, int? height)
+        private void CropImage(Image<Rgba32> image, int? width, int? height)
         {
             if (!width.HasValue || !height.HasValue)
             {
@@ -99,23 +118,25 @@ namespace Q42.ImageResizert
             var isWider = (float)image.Width / (float)image.Height > (float)newWidth / (float)newHeight;
             if (isWider)
             {
-                image.Resize(0, newHeight);
+                image.Mutate(x => x.Resize(0, newHeight));
             }
             else
             {
-                image.Resize(newWidth, 0);
+                image.Mutate(x => x.Resize(newWidth, 0));
+
             }
 
-            image.Crop(newWidth, newHeight, Gravity.Center);
+            image.Mutate(x => x.Crop(newWidth, newHeight));
+
         }
 
-        private void ResizeImage(MagickImage image, int? width, int? height)
+        private void ResizeImage(Image<Rgba32> image, int? width, int? height)
         {
             var newWidth = Math.Min(width ?? 0, image.Width);
             var newHeight = Math.Min(height ?? 0, image.Height);
 
-            MagickGeometry size = new MagickGeometry(newWidth, newHeight);
-            image.Resize(size);
+            image.Mutate(x => x.Crop(newWidth, newHeight));
+
         }
 
         private string GetCacheUrl(string id, int? width, int? height, bool cover, int quality)
