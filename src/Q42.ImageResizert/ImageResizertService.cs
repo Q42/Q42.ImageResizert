@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace Q42.ImageResizert
 {
+
     public class ImageResizertService
     {
         private readonly CloudBlobContainer downloadContainer;
@@ -30,21 +31,25 @@ namespace Q42.ImageResizert
             compressionQuality = settings.CompressionQuality;
         }
 
-        public async Task<Stream> GetImageAsync(string id, int? width = null, int? height = null, bool cover = false, int? quality = null)
+        public async Task<byte[]> GetImageAsync(string id, int? width = null, int? height = null, bool cover = false, int? quality = null)
         {
             return await GetImageAsync(id, width, height, cover, quality ?? compressionQuality);
         }
 
-        private async Task<Stream> GetImageAsync(string id, int? width, int? height, bool cover, int quality)
+        private async Task<byte[]> GetImageAsync(string id, int? width, int? height, bool cover, int quality)
         {
             // get from cache if exists
             var cacheBlob = cacheContainer.GetBlockBlobReference(GetCacheUrl(id, width, height, cover, quality));
             if (await cacheBlob.ExistsAsync())
             {
-                return await cacheBlob.OpenReadAsync();
+                using (var stream = new MemoryStream())
+                {
+                    await cacheBlob.DownloadToStreamAsync(stream);
+                    return stream.ToArray();
+                }
             }
 
-            using (Stream stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             {
                 // get original image
                 var blob = downloadContainer.GetBlobReference(id);
@@ -58,11 +63,11 @@ namespace Q42.ImageResizert
 
                 // download image
                 await blob.DownloadToStreamAsync(stream);
-
+                var imageBytes = stream.ToArray();
                 
 
                 // Read from stream.
-                using (var image = Image.Load(Configuration.Default, stream, out var format))
+                using (var image = Image.Load(Configuration.Default, imageBytes, out var format))
                 {
                     if (cover)
                     {
@@ -89,11 +94,16 @@ namespace Q42.ImageResizert
                         }
 
                         // store in cache
-                        await cacheBlob.UploadFromStreamAsync(output);
-                        cacheBlob.Properties.ContentType = format.DefaultMimeType;
-                        await cacheBlob.SetPropertiesAsync();
 
-                        return output;
+                        var result = output.ToArray();
+                        using (var saveStream = new MemoryStream(result))
+                        {
+                            await cacheBlob.UploadFromStreamAsync(saveStream);
+                            cacheBlob.Properties.ContentType = format.DefaultMimeType;
+                            await cacheBlob.SetPropertiesAsync();
+
+                            return result;
+                        }
                     }
                 }
             }
