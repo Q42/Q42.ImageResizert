@@ -1,7 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/nc3782ai2n0u7wtp?svg=true)](https://ci.appveyor.com/project/Q42/q42-imageresizert)
 
 # Q42.ImageResizert
-Image resizing for dotnet core mvc projects using ImageMagick and Azure storage.
+Image resizing for dotnet core mvc projects using ImageSharp and Azure storage.
 
 Include this package in any dot net core mvc file and `/image/{imageId}?w=200&h=300&cover=true&quality=90` will handle imageresizing.
 
