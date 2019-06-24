@@ -19,12 +19,12 @@ namespace Q42.ImageResizert
         private readonly CloudBlobContainer cacheContainer;
         private readonly string cacheFolder;
         private readonly int compressionQuality;
-
+        
         public ImageResizertService(ImageResizertSettings settings)
         {
             var storageAccount = CloudStorageAccount.Parse(settings.AzureConnectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
-
+            
             downloadContainer = blobClient.GetContainerReference(settings.AssetContainerName);
             cacheContainer = string.IsNullOrEmpty(settings.CacheContainerName) ? downloadContainer : blobClient.GetContainerReference(settings.CacheContainerName);
             cacheFolder = settings.CacheContainerFolder ?? "imagecache";
@@ -139,11 +139,18 @@ namespace Q42.ImageResizert
 
         private void ResizeImage(Image<Rgba32> image, int? width, int? height)
         {
-            var newWidth = Math.Min(width ?? 0, image.Width);
-            var newHeight = Math.Min(height ?? 0, image.Height);
+            var newWidth = width ?? image.Width;
+            var newHeight = height ?? image.Height;
+
+            // Guard against large width from the query params
+            if (newWidth < 1 || newWidth > image.Width)
+                newWidth = image.Width;
+            
+            // Guard against large height from the query params
+            if (newHeight < 1 || newHeight > image.Height)
+                newHeight = image.Height;
 
             image.Mutate(x => x.Crop(newWidth, newHeight));
-
         }
 
         private string GetCacheUrl(string id, int? width, int? height, bool cover, int quality)
